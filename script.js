@@ -61,7 +61,7 @@ function renderTeachers() {
       <h3>${teacher.name}</h3>
       <p>Subject: ${teacher.subject}</p>
       <p>Average Rating: ${calculateAverageRating(teacher.ratings)}</p>
-      <div class="rating-input">
+      <div class="rating-input" id="rating-input-${index}">
         <input type="number" id="rating-${index}" min="1" max="10" placeholder="Rate (1-10)" />
         <button onclick="submitRating(${index})">Submit Rating</button>
       </div>
@@ -91,6 +91,10 @@ async function submitRating(teacherIndex) {
   try {
     // Save rating to the server
     await saveRatingToServer(teacherIndex, rating);
+
+    // Remove the input and button, and show a thank you message
+    const ratingInputDiv = document.getElementById(`rating-input-${teacherIndex}`);
+    ratingInputDiv.innerHTML = "<p>Rating submitted, Thank you!</p>";
 
     // Fetch updated ratings from the server
     const updatedRatings = await fetchRatingsFromServer();
