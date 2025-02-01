@@ -65,7 +65,7 @@ app.post("/api/save-rating", async (req, res) => {
     // Update or insert the rating
     await ratingsCollection.updateOne(
       { teacherIndex },
-      { $push: { ratings: rating } },
+      { $push: { ratings: rating }, $inc: { ratingCount: 1 } }, // Increment ratingCount
       { upsert: true }
     );
 
@@ -83,10 +83,13 @@ app.get("/api/get-ratings", async (req, res) => {
     const ratingsCollection = db.collection("ratings");
     const ratings = await ratingsCollection.find({}).toArray();
 
-    // Format ratings as { teacherIndex: [ratings] }
+    // Format ratings as { teacherIndex: { ratings: [], ratingCount: number } }
     const formattedRatings = {};
     ratings.forEach((doc) => {
-      formattedRatings[doc.teacherIndex] = doc.ratings;
+      formattedRatings[doc.teacherIndex] = {
+        ratings: doc.ratings,
+        ratingCount: doc.ratingCount || 0, // Include ratingCount
+      };
     });
 
     res.json(formattedRatings);

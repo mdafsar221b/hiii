@@ -1,8 +1,8 @@
 const teachers = [
-  { name: "Ms Anuradha Singh", subject: "Operating System", ratings: [] },
-  { name: "Ms Priya Chaturvedi", subject: "Data Structures", ratings: [] },
-  { name: "Ms Kanchan Yadav", subject: "COA", ratings: [] },
-  { name: "Mr Yogendra Yadav", subject: "Mathematics", ratings: [] },
+  { name: "Ms Anuradha Singh", subject: "Operating System", ratings: [], ratingCount: 0 },
+  { name: "Ms Priya Chaturvedi", subject: "Data Structures", ratings: [], ratingCount: 0 },
+  { name: "Ms Kanchan Yadav", subject: "COA", ratings: [], ratingCount: 0 },
+  { name: "Mr Yogendra Yadav", subject: "Mathematics", ratings: [], ratingCount: 0 },
 ];
 
 // Save rating to the server
@@ -56,11 +56,12 @@ function renderTeachers() {
     const teacherDiv = document.createElement("div");
     teacherDiv.className = "teacher";
 
-    // Display teacher name and subject
+    // Display teacher name, subject, average rating, and rating count
     teacherDiv.innerHTML = `
       <h3>${teacher.name}</h3>
       <p>Subject: ${teacher.subject}</p>
       <p>Average Rating: ${calculateAverageRating(teacher.ratings)}</p>
+      <p>Number of Ratings: ${teacher.ratingCount}</p>
       <div class="rating-input" id="rating-input-${index}">
         <input type="number" id="rating-${index}" min="1" max="10" placeholder="Rate (1-10)" />
         <button onclick="submitRating(${index})">Submit Rating</button>
@@ -91,6 +92,9 @@ async function submitRating(teacherIndex) {
   try {
     // Save rating to the server
     await saveRatingToServer(teacherIndex, rating);
+
+    // Increment the rating count
+    teachers[teacherIndex].ratingCount++;
 
     // Remove the input and button, and show a thank you message
     const ratingInputDiv = document.getElementById(`rating-input-${teacherIndex}`);
@@ -143,6 +147,7 @@ async function init() {
     teachers.forEach((teacher, index) => {
       if (ratings[index]) {
         teacher.ratings = ratings[index];
+        teacher.ratingCount = ratings[index].length; // Set the rating count
       }
     });
 
