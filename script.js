@@ -113,6 +113,26 @@ async function submitRating(teacherIndex) {
   }
 }
 
+// Reset ratings function
+async function resetRatings() {
+  try {
+    const response = await fetch("http://localhost:3000/api/reset-ratings", {
+      method: "POST",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to reset ratings");
+    }
+
+    const data = await response.json();
+    console.log("Ratings reset:", data);
+    alert("All ratings have been reset.");
+  } catch (error) {
+    console.error("Error resetting ratings:", error);
+    alert("Failed to reset ratings. Please try again.");
+  }
+}
+
 // Initialize the app
 async function init() {
   try {
