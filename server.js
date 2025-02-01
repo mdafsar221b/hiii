@@ -1,9 +1,9 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const { MongoClient } = require("mongodb");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
-const cookieParser = require("cookie-parser");
 
 const app = express();
 const port = 3000;
@@ -41,7 +41,7 @@ app.post("/api/save-rating", async (req, res) => {
   const userId = req.cookies.userId; // Get user ID from cookies
   const ratingsCollection = db.collection("ratings"); // Define ratingsCollection here
 
-  // Check if the user has already rated
+  // Check if the user has already rated this specific teacher
   if (userId) {
     const existingRating = await ratingsCollection.findOne({ userId, teacherIndex });
     if (existingRating) {
@@ -63,10 +63,23 @@ app.post("/api/save-rating", async (req, res) => {
 
   try {
     // Update or insert the rating
+    const result = await ratingsCollection.updateOne(
+      { teacherIndex },
+      { 
+        $push: { ratings: rating }, 
+        $inc: { ratingCount: 1 }, // Increment ratingCount
+      },
+      { upsert: true }
+    );
+
+    // Calculate the new average rating
+    const updatedEntry = await ratingsCollection.findOne({ teacherIndex });
+    const averageRating = updatedEntry.ratings.reduce((acc, r) => acc + r, 0) / updatedEntry.ratingCount;
+
+    // Update the average rating in the database
     await ratingsCollection.updateOne(
       { teacherIndex },
-      { $push: { ratings: rating }, $inc: { ratingCount: 1 } }, // Increment ratingCount
-      { upsert: true }
+      { $set: { averageRating: averageRating } }
     );
 
     console.log("Rating saved successfully:", { teacherIndex, rating });
@@ -89,6 +102,7 @@ app.get("/api/get-ratings", async (req, res) => {
       formattedRatings[doc.teacherIndex] = {
         ratings: doc.ratings,
         ratingCount: doc.ratingCount || 0, // Include ratingCount
+        averageRating: doc.averageRating || 0 // Include averageRating
       };
     });
 

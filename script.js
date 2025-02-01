@@ -7,6 +7,17 @@ const teachers = [
 
 // Save rating to the server
 async function saveRatingToServer(teacherIndex, rating) {
+  const deviceId = localStorage.getItem(`deviceId-${teacherIndex}`);
+
+  if (deviceId) {
+    alert("You have already submitted a rating for this teacher from this device.");
+    return;
+  }
+
+  // Generate a unique device identifier and store it
+  const newDeviceId = Date.now(); // Using timestamp as a unique ID
+  localStorage.setItem(`deviceId-${teacherIndex}`, newDeviceId);
+
   try {
     const response = await fetch("http://localhost:3000/api/save-rating", {
       method: "POST",
@@ -74,8 +85,10 @@ function renderTeachers() {
 
 // Calculate average rating
 function calculateAverageRating(ratings) {
-  if (ratings.length === 0) return "No ratings yet";
+  console.log("Calculating average for ratings:", ratings); // Log ratings being calculated
+  if (!Array.isArray(ratings) || ratings.length === 0) return "No ratings yet";
   const sum = ratings.reduce((acc, rating) => acc + rating, 0);
+
   return (sum / ratings.length).toFixed(2);
 }
 
@@ -96,21 +109,14 @@ async function submitRating(teacherIndex) {
     // Increment the rating count
     teachers[teacherIndex].ratingCount++;
 
+    // Add the new rating to the teacher's ratings
+    teachers[teacherIndex].ratings.push(rating); // Update the ratings array
+
     // Remove the input and button, and show a thank you message
     const ratingInputDiv = document.getElementById(`rating-input-${teacherIndex}`);
     ratingInputDiv.innerHTML = "<p>Rating submitted, Thank you!</p>";
 
-    // Fetch updated ratings from the server
-    const updatedRatings = await fetchRatingsFromServer();
-
-    // Update the teachers array with the new ratings
-    teachers.forEach((teacher, index) => {
-      if (updatedRatings[index]) {
-        teacher.ratings = updatedRatings[index];
-      }
-    });
-
-    // Re-render the teachers
+    // Re-render the teachers to show updated average rating
     renderTeachers();
   } catch (error) {
     console.error("Error submitting rating:", error);
@@ -141,13 +147,13 @@ async function resetRatings() {
 async function init() {
   try {
     // Fetch ratings from the server
-    const ratings = await fetchRatingsFromServer();
+    const fetchedRatings = await fetchRatingsFromServer();
 
     // Update the teachers array with the fetched ratings
     teachers.forEach((teacher, index) => {
-      if (ratings[index]) {
-        teacher.ratings = ratings[index];
-        teacher.ratingCount = ratings[index].length; // Set the rating count
+      if (fetchedRatings[index] && Array.isArray(fetchedRatings[index])) {
+        teacher.ratings = fetchedRatings[index];
+        teacher.ratingCount = fetchedRatings[index].length; // Set the rating count
       }
     });
 
