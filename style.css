@@ -1,10 +1,11 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
+    background: #131010;
 }
 
 h1 {
-    color: #333;
+    color:#F0BB78;
     text-align: center;
 }
 
@@ -19,8 +20,10 @@ h1 {
 
 .teacher {
     box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+    background: #FFF0DC;
     padding: 30px;
     margin-bottom: 10px;
+    border-radius: 10px;
 }
 
 .rating-input {
@@ -30,4 +33,15 @@ h1 {
 input[type="number"] {
     width: 60px;
     margin-right: 10px;
+}
+.reset-btn{
+    background-color: #F0BB78;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 8px ;
+    border-color: #F0BB78;
+    text-align: center;
+    align-items: center;
+    margin-left: 46%;
+    margin-top: 20px;
 }
