@@ -102,7 +102,8 @@ app.get("/api/get-ratings", async (req, res) => {
       formattedRatings[doc.teacherIndex] = {
         ratings: doc.ratings,
         ratingCount: doc.ratingCount || 0, // Include ratingCount
-        averageRating: doc.averageRating || 0 // Include averageRating
+        averageRating: doc.averageRating || 0, // Include averageRating
+
       };
     });
 

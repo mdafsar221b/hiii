@@ -7,17 +7,6 @@ const teachers = [
 
 // Save rating to the server
 async function saveRatingToServer(teacherIndex, rating) {
-  const deviceId = localStorage.getItem(`deviceId-${teacherIndex}`);
-
-  if (deviceId) {
-    alert("You have already submitted a rating for this teacher from this device.");
-    return;
-  }
-
-  // Generate a unique device identifier and store it
-  const newDeviceId = Date.now(); // Using timestamp as a unique ID
-  localStorage.setItem(`deviceId-${teacherIndex}`, newDeviceId);
-
   try {
     const response = await fetch("http://localhost:3000/api/save-rating", {
       method: "POST",
@@ -112,9 +101,14 @@ async function submitRating(teacherIndex) {
     // Add the new rating to the teacher's ratings
     teachers[teacherIndex].ratings.push(rating); // Update the ratings array
 
-    // Remove the input and button, and show a thank you message
-    const ratingInputDiv = document.getElementById(`rating-input-${teacherIndex}`);
-    ratingInputDiv.innerHTML = "<p>Rating submitted, Thank you!</p>";
+    // Fetch updated ratings from the server
+    const updatedRatings = await fetchRatingsFromServer();
+    teachers.forEach((teacher, index) => {
+      if (updatedRatings[index]) {
+        teacher.ratings = updatedRatings[index].ratings;
+        teacher.ratingCount = updatedRatings[index].ratingCount;
+      }
+    });
 
     // Re-render the teachers to show updated average rating
     renderTeachers();
@@ -151,9 +145,9 @@ async function init() {
 
     // Update the teachers array with the fetched ratings
     teachers.forEach((teacher, index) => {
-      if (fetchedRatings[index] && Array.isArray(fetchedRatings[index])) {
-        teacher.ratings = fetchedRatings[index];
-        teacher.ratingCount = fetchedRatings[index].length; // Set the rating count
+      if (fetchedRatings[index] && Array.isArray(fetchedRatings[index].ratings)) {
+        teacher.ratings = fetchedRatings[index].ratings;
+        teacher.ratingCount = fetchedRatings[index].ratingCount; // Set the rating count
       }
     });
 
