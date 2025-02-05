@@ -15,6 +15,10 @@ async function saveRatingToServer(teacherIndex, rating) {
     });
 
     if (!response.ok) {
+      const errorData = await response.json();
+      if (errorData.error) {
+        console.error(errorData.error); // Log the error message from the server
+      }
       throw new Error("Failed to save rating");
     }
 
@@ -64,7 +68,7 @@ function renderTeachers() {
       <p>Number of Ratings: ${teacher.ratingCount}</p>
       <div class="rating-input" id="rating-input-${index}">
         <input type="number" id="rating-${index}" min="1" max="10" placeholder="Rate (1-10)" />
-        <button onclick="submitRating(${index})">Submit Rating</button>
+        <button id="submit-${index}" onclick="submitRating(${index})">Submit Rating</button>
       </div>
     `;
 
@@ -85,6 +89,7 @@ function calculateAverageRating(ratings) {
 async function submitRating(teacherIndex) {
   const ratingInput = document.getElementById(`rating-${teacherIndex}`);
   const rating = parseInt(ratingInput.value, 10);
+  const submitButton = document.getElementById(`submit-${teacherIndex}`);
 
   if (isNaN(rating) || rating < 1 || rating > 10) {
     alert("Please enter a valid rating between 1 and 10.");
@@ -92,6 +97,13 @@ async function submitRating(teacherIndex) {
   }
 
   try {
+    // Check if the user has already rated this teacher
+    const existingRatings = await fetchRatingsFromServer();
+    if (existingRatings[teacherIndex] && existingRatings[teacherIndex].ratings.includes(rating)) {
+      submitButton.disabled = true; // Disable the submit button
+      return;
+    }
+
     // Save rating to the server
     await saveRatingToServer(teacherIndex, rating);
 

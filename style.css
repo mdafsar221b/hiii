@@ -45,3 +45,32 @@ input[type="number"] {
     margin-left: 46%;
     margin-top: 20px;
 }
+
+
+.rating-input input {
+    padding: 10px;
+    border: 2px solid #F0BB78;
+    border-radius: 5px;
+    width: 100px;
+    margin-right: 10px;
+}
+
+.rating-input button {
+    background-color: #F0BB78;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.rating-input button:hover {
+    background-color: #d9a86a;
+}
+
+.rating-input button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
