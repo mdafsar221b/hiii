@@ -1,8 +1,8 @@
 const teachers = [
-  { name: "Ms Anuradha Singh", subject: "Operating System", ratings: [], ratingCount: 0 },
-  { name: "Ms Priya Chaturvedi", subject: "Data Structures", ratings: [], ratingCount: 0 },
-  { name: "Ms Kanchan Yadav", subject: "COA", ratings: [], ratingCount: 0 },
-  { name: "Mr Yogendra Yadav", subject: "Mathematics", ratings: [], ratingCount: 0 },
+  { name: "Ms Anuradha Singh", subject: "DBMS", ratings: [], ratingCount: 0 },
+  { name: "Mr Krishna", subject: "Software Engineering", ratings: [], ratingCount: 0 },
+  { name: "Mr Anurag Tripathi", subject: "Computer Graphic", ratings: [], ratingCount: 0 },
+  { name: "Mr Ramu padey", subject: "Operation Research", ratings: [], ratingCount: 0 },
 ];
 
 // Save rating to the server
@@ -36,6 +36,8 @@ async function saveRatingToServer(teacherIndex, rating) {
 async function fetchRatingsFromServer() {
   try {
     const response = await fetch("http://localhost:3000/api/get-ratings");
+
+    console.log("Response Status:", response.status); // Log response status
 
     if (!response.ok) {
       throw new Error("Failed to fetch ratings");
