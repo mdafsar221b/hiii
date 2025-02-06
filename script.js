@@ -7,8 +7,9 @@ const teachers = [
 
 // Save rating to the server
 async function saveRatingToServer(teacherIndex, rating) {
+  const BASE_URL = window.location.origin;
   try {
-    const response = await fetch("http://localhost:3000/api/save-rating", {
+    const response = await fetch(`${BASE_URL}/api/save-rating`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ teacherIndex, rating }),
@@ -34,9 +35,9 @@ async function saveRatingToServer(teacherIndex, rating) {
 
 // Fetch ratings from the server
 async function fetchRatingsFromServer() {
+  const BASE_URL = window.location.origin; 
   try {
-    const response = await fetch("http://localhost:3000/api/get-ratings");
-
+    const response = await fetch(`${BASE_URL}/api/get-ratings`);
     console.log("Response Status:", response.status); // Log response status
 
     if (!response.ok) {
@@ -47,11 +48,12 @@ async function fetchRatingsFromServer() {
     console.log("Ratings fetched:", data);
     return data;
   } catch (error) {
-    console.error("Error fetching ratings:", error);
+    console.log("Error fetching ratings:", error);
     alert("Failed to fetch ratings. Please try again.");
     throw error;
   }
 }
+
 
 // Render teachers with their ratings
 function renderTeachers() {
@@ -133,8 +135,9 @@ async function submitRating(teacherIndex) {
 
 // Reset ratings function
 async function resetRatings() {
+  const BASE_URL = window.location.origin;
   try {
-    const response = await fetch("http://localhost:3000/api/reset-ratings", {
+    const response = await fetch(`${BASE_URL}/api/get-ratings`, {
       method: "POST",
     });
 
